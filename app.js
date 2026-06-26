@@ -11,6 +11,15 @@ function showResult(elementId, message, type) {
     );
 }
 
+function processApiResponse(data) {
+    // Maneja diferentes formatos de respuesta
+    if (data.url) return data.url;
+    if (data.download_url) return data.download_url;
+    if (data.data && data.data.url) return data.data.url;
+    if (data.data && data.data.download_url) return data.data.download_url;
+    return null;
+}
+
 function downloadYoutube() {
     const url = document.getElementById('yt-url').value;
     const format = document.getElementById('yt-format').value;
@@ -31,19 +40,28 @@ function downloadYoutube() {
         apiUrl += `&format=${formatMap[format]}`;
     }
 
-    fetch(apiUrl)
-        .then(res => res.json())
+    fetch(apiUrl, { 
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace de descarga', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error YouTube:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 function downloadTiktok() {
@@ -57,19 +75,28 @@ function downloadTiktok() {
 
     showResult(resultId, '<div class="loader"></div> Descargando...', 'loading');
 
-    fetch(`${API_BASE}/tiktok?url=${encodeURIComponent(url)}`)
-        .then(res => res.json())
+    fetch(`${API_BASE}/tiktok?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error TikTok:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 function downloadInstagram() {
@@ -83,19 +110,28 @@ function downloadInstagram() {
 
     showResult(resultId, '<div class="loader"></div> Descargando...', 'loading');
 
-    fetch(`${API_BASE}/instagram?url=${encodeURIComponent(url)}`)
-        .then(res => res.json())
+    fetch(`${API_BASE}/instagram?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error Instagram:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 function downloadTwitter() {
@@ -109,19 +145,28 @@ function downloadTwitter() {
 
     showResult(resultId, '<div class="loader"></div> Descargando...', 'loading');
 
-    fetch(`${API_BASE}/twitterdl?url=${encodeURIComponent(url)}`)
-        .then(res => res.json())
+    fetch(`${API_BASE}/twitterdl?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error Twitter:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 function downloadFacebook() {
@@ -135,19 +180,28 @@ function downloadFacebook() {
 
     showResult(resultId, '<div class="loader"></div> Descargando...', 'loading');
 
-    fetch(`${API_BASE}/facebook?url=${encodeURIComponent(url)}`)
-        .then(res => res.json())
+    fetch(`${API_BASE}/facebook?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error Facebook:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 function downloadXvideos() {
@@ -161,19 +215,28 @@ function downloadXvideos() {
 
     showResult(resultId, '<div class="loader"></div> Descargando...', 'loading');
 
-    fetch(`${API_BASE}/xvideos?url=${encodeURIComponent(url)}`)
-        .then(res => res.json())
+    fetch(`${API_BASE}/xvideos?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error Xvideos:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 function downloadPinterest() {
@@ -187,19 +250,28 @@ function downloadPinterest() {
 
     showResult(resultId, '<div class="loader"></div> Descargando...', 'loading');
 
-    fetch(`${API_BASE}/pinterestdl?url=${encodeURIComponent(url)}`)
-        .then(res => res.json())
+    fetch(`${API_BASE}/pinterestdl?url=${encodeURIComponent(url)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    })
+        .then(res => {
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success' || data.url) {
-                const downloadUrl = data.url || data.download_url;
+            const downloadUrl = processApiResponse(data);
+            if (downloadUrl) {
                 showResult(resultId, 
                     `✅ Listo<br><a href="${downloadUrl}" class="download-link" target="_blank">📥 Descargar</a>`, 
                     'success');
             } else {
-                showResult(resultId, '❌ Error: ' + (data.message || 'Fallo'), 'error');
+                showResult(resultId, '❌ No se pudo obtener el enlace', 'error');
             }
         })
-        .catch(err => showResult(resultId, '❌ Error: ' + err.message, 'error'));
+        .catch(err => {
+            console.error('Error Pinterest:', err);
+            showResult(resultId, '❌ Error: ' + err.message, 'error');
+        });
 }
 
 // Permitir Enter en inputs
@@ -215,3 +287,4 @@ document.addEventListener('keypress', (e) => {
         else if (activeElement.id === 'pin-url') downloadPinterest();
     }
 });
+
