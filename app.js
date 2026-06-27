@@ -13,10 +13,11 @@ function showResult(elementId, message, type) {
 
 function processApiResponse(data) {
     // Maneja diferentes formatos de respuesta
+    if (data.data && data.data.download) return data.data.download;
+    if (data.data && data.data.url) return data.data.url;
     if (data.url) return data.url;
     if (data.download_url) return data.download_url;
-    if (data.data && data.data.url) return data.data.url;
-    if (data.data && data.data.download_url) return data.data.download_url;
+    if (data.download) return data.download;
     return null;
 }
 
@@ -288,3 +289,4 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
+        
